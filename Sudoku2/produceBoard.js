@@ -257,47 +257,75 @@ function clearHighlights(type) {
     }
 }
 
+function isValidInput(value, row, col, board) {
+    // Check if the value is not a number or not between 1 and 9
+    if (isNaN(value) || value < 1 || value > 9) {
+        return false;
+    }
+
+    // Check if the value already exists in the same row
+    for (let i = 0; i < 9; i++) {
+        if (board[row][i] == value) {
+            return false;
+        }
+    }
+
+    // Check if the value already exists in the same column
+    for (let i = 0; i < 9; i++) {
+        if (board[i][col] == value) {
+            return false;
+        }
+    }
+
+    // Check if the value already exists in the same 3x3 square
+    let startRow = Math.floor(row / 3) * 3;
+    let startCol = Math.floor(col / 3) * 3;
+    for (let i = startRow; i < startRow + 3; i++) {
+        for (let j = startCol; j < startCol + 3; j++) {
+            if (board[i][j] == value) {
+                return false;
+            }
+        }
+    }
+
+    // If all checks passed, the input is valid
+    return true;
+}
+
 // Function to handle user input from keyboard
-function handleInput(cell, i, j) {
-    const value = parseInt(cell.textContent);
-    if (!isNaN(value)) {
-        board[i][j] = value;
+function handleInput(event, i, j, selectedCell) {
+    let inputValue = event.target.value;
+    if (isValidInput(inputValue)) {
+        board[i][j] = parseInt(inputValue);
+        selectedCell.textContent = inputValue;
+        selectedCell.classList.remove("error");
     } else {
-        board[i][j] = 0;
+        selectedCell.classList.add("error");
     }
 }
 
-function handleKeyDown(event, i, j) {
-    switch (event.code) {
-        case "ArrowUp":
-            if (i > 0) {
-                document.getElementById(`cell-${i - 1}-${j}`).focus();
-            }
-            break;
-        case "ArrowDown":
-            if (i < 8) {
-                document.getElementById(`cell-${i + 1}-${j}`).focus();
-            }
-            break;
-        case "ArrowLeft":
-            if (j > 0) {
-                document.getElementById(`cell-${i}-${j - 1}`).focus();
-            }
-            break;
-        case "ArrowRight":
-            if (j < 8) {
-                document.getElementById(`cell-${i}-${j + 1}`).focus();
-            }
-            break;
-        default:
-            if (event.keyCode >= 48 && event.keyCode <= 57) {
-                board[i][j] = parseInt(event.key);
+function handleKeyDown(event, i, j, selectedCell) {
+    if (selectedCell) {
+        if (event.keyCode >= 49 && event.keyCode <= 57) {
+            let value = event.keyCode - 48;
+            console.log(`Clicked (${value})`);
+            if (isValidInput(value, i, j, board)) {
+                selectedCell.textContent = value;
+                board[i][j] = value;
+                //clearHighlight();
+                //highlight(i, j, value);
             } else {
-                event.preventDefault();
+                alert("Oops! Incorrect guess.");
             }
-            break;
+        } else if (event.keyCode === 8 || event.keyCode === 46) {
+            selectedCell.textContent = "";
+            board[i][j] = 0;
+            //clearHighlight();
+        }
     }
 }
+
+
 
 
 function createBoardTableVisual() {
@@ -310,6 +338,9 @@ function createBoardTableVisual() {
     // Create a tbody element
     let tbody = document.createElement("tbody");
 
+    // Define a selected cell object to keep track of the currently selected cell
+    let selectedCell = { row: -1, col: -1 };
+
     // Populate the board with cells
     for (let i = 0; i < 9; i++) {
         let row = document.createElement("tr");
@@ -321,18 +352,29 @@ function createBoardTableVisual() {
             // Set the value of the cell from the board array
             cell.textContent = board[i][j] === 0 ? "" : board[i][j];
 
-            // Add click event listener to the cell
-            cell.addEventListener("click", function () {
-                // Handle the click event here
-                console.log(`Clicked cell (${i}, ${j})`);
-            });
+            // Add the tabindex attribute to make the cell focusable
+            cell.setAttribute("tabindex", 0);
 
             cell.addEventListener("mouseover", () => {
                 highlightCells(i, j, boardElement, type);
+                selectedCell.row = i;
+                selectedCell.col = j;
+                console.log(`Mousing over (${i}, ${j})`);
             });
 
             cell.addEventListener("mouseout", () => {
                 clearHighlights(type);
+            });
+
+            // Set the row and column indices of the selected cell to the current cell's indices when the cell is clicked
+            cell.addEventListener("click", () => {
+                console.log(`Clicked cell (${i}, ${j})`);
+                selectedCell.row = i;
+                selectedCell.col = j;
+            });
+
+            cell.addEventListener("input", () => {
+                handleInput(cell, i, j, selectedCell);
             });
 
             // Append the cell to the row
@@ -345,7 +387,15 @@ function createBoardTableVisual() {
 
     // Append the tbody to the table
     boardElement.appendChild(tbody);
+
+    // Add event listener for keydown events on the document
+    document.addEventListener("keydown", (event) => {
+        if (selectedCell.row !== -1 && selectedCell.col !== -1) {
+            handleKeyDown(event, selectedCell.row, selectedCell.col, type);
+        }
+    });
 };
+
 
 window.addEventListener("load", function () {
     // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
