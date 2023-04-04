@@ -43,6 +43,14 @@ h1 {
   border: 1px solid #ccc;
 }
 
+#board tr:first-child {
+  border-top: 3px solid black;
+}
+
+#board td:nth-child(3n) {
+  border-right: 3px solid black;
+}
+
 #board .cell:hover {
   background-color: #ffe6e6;
 }
@@ -53,4 +61,15 @@ h1 {
 
 .highlight-same {
   background-color: #e6ffe6;
+}
+
+/* Every third row */
+tr:nth-child(3n) {
+  border-bottom: 3px solid black;
+}
+
+/* Darker border color for every third column */
+tr:nth-child(n) {
+  border-right: 3px solid black;
+  border-left: 3px solid black
 }

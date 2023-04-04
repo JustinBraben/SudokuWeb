@@ -1,4 +1,5 @@
 let board = [];
+let solvedBoard = [];
 
 function shuffle(array) {
     // Loop through the array from the end to the beginning
@@ -193,6 +194,8 @@ function createSudokuPuzzle() {
     let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
     removeNumbers(puzzleGrid, 40);
 
+    solvedBoard = solvedGrid;
+
     board = puzzleGrid;
 
     return { solvedGrid, puzzleGrid };
@@ -258,39 +261,35 @@ function clearHighlights(type) {
 }
 
 function isValidInput(value, row, col, board) {
-    // Check if the value is not a number or not between 1 and 9
-    if (isNaN(value) || value < 1 || value > 9) {
-        return false;
-    }
-
-    // Check if the value already exists in the same row
-    for (let i = 0; i < 9; i++) {
-        if (board[row][i] == value) {
+    // Check if the value is already present in the same row
+    for (let j = 0; j < 9; j++) {
+        if (board[row][j] === value) {
             return false;
         }
     }
 
-    // Check if the value already exists in the same column
+    // Check if the value is already present in the same column
     for (let i = 0; i < 9; i++) {
-        if (board[i][col] == value) {
+        if (board[i][col] === value) {
             return false;
         }
     }
 
-    // Check if the value already exists in the same 3x3 square
-    let startRow = Math.floor(row / 3) * 3;
-    let startCol = Math.floor(col / 3) * 3;
-    for (let i = startRow; i < startRow + 3; i++) {
-        for (let j = startCol; j < startCol + 3; j++) {
-            if (board[i][j] == value) {
+    // Check if the value is already present in the same 3x3 box
+    let boxRow = Math.floor(row / 3) * 3;
+    let boxCol = Math.floor(col / 3) * 3;
+    for (let i = boxRow; i < boxRow + 3; i++) {
+        for (let j = boxCol; j < boxCol + 3; j++) {
+            if (board[i][j] === value) {
                 return false;
             }
         }
     }
 
-    // If all checks passed, the input is valid
+    // If the value is not present in the same row, column, or 3x3 box, it is a valid input
     return true;
 }
+
 
 // Function to handle user input from keyboard
 function handleInput(event, i, j, selectedCell) {
@@ -304,28 +303,37 @@ function handleInput(event, i, j, selectedCell) {
     }
 }
 
-function handleKeyDown(event, i, j, selectedCell) {
+function handleKeyDown(event, row, col, selectedCell) {
     if (selectedCell) {
         if (event.keyCode >= 49 && event.keyCode <= 57) {
             let value = event.keyCode - 48;
             console.log(`Clicked (${value})`);
-            if (isValidInput(value, i, j, board)) {
+            if (isValidInput(value, row, col, board)) {
+                board[row][col] = value;
                 selectedCell.textContent = value;
-                board[i][j] = value;
-                //clearHighlight();
-                //highlight(i, j, value);
+                updateBoardTable();
             } else {
                 alert("Oops! Incorrect guess.");
             }
         } else if (event.keyCode === 8 || event.keyCode === 46) {
             selectedCell.textContent = "";
-            board[i][j] = 0;
-            //clearHighlight();
+            board[row][col] = 0;
         }
     }
 }
 
+function updateBoardTable() {
+    // Get the table element from the HTML document
+    let boardElement = document.getElementById("board");
 
+    // Loop through all the table cells and update their text content
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            let cell = boardElement.rows[i].cells[j];
+            cell.textContent = board[i][j] === 0 ? "" : board[i][j];
+        }
+    }
+}
 
 
 function createBoardTableVisual() {
@@ -373,6 +381,14 @@ function createBoardTableVisual() {
                 selectedCell.col = j;
             });
 
+            cell.addEventListener("keydown", function (event) {
+                // Add event listener for keydown events on the cell
+                if (selectedCell.row !== -1 && selectedCell.col !== -1) {
+                    console.log(`Keydown: ${event.key}`);
+                }
+                handleKeyDown(event, selectedCell.row, selectedCell.col, selectedCell);
+            });
+
             cell.addEventListener("input", () => {
                 handleInput(cell, i, j, selectedCell);
             });
@@ -387,13 +403,6 @@ function createBoardTableVisual() {
 
     // Append the tbody to the table
     boardElement.appendChild(tbody);
-
-    // Add event listener for keydown events on the document
-    document.addEventListener("keydown", (event) => {
-        if (selectedCell.row !== -1 && selectedCell.col !== -1) {
-            handleKeyDown(event, selectedCell.row, selectedCell.col, type);
-        }
-    });
 };
 
 
