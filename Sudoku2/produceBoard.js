@@ -1,149 +1,206 @@
-svgNS = "http://www.w3.org/2000/svg";
+function shuffle(array) {
+    // Loop through the array from the end to the beginning
+    for (let i = array.length - 1; i > 0; i--) {
+        // Generate a random index between 0 and i (inclusive)
+        let j = Math.floor(Math.random() * (i + 1));
 
-let GridNumbers=[];
-
-//set width and height of the board
-    const wholeBoard = document.createElementNS(svgNS, "svg");
-    wholeBoard.setAttribute("width", "450");
-    wholeBoard.setAttribute("height", "450");
-
-window.onload = function(e) {
-    
-    CreateBoard();
-    NumbersOnBoard();
-    HighlightBoard();
-    GenerateNumbers();
-    
-    //GridNumbers.forEach((e) => {
-    //    console.log(e);
-    //}) ;
-};
-
-function GenerateNumbers(){
-    GridNumbers = [];
-    
-    while(GridNumbers.length < 9)
-    {
-        currLine = [];
-        while(currLine.length < 9)
-        {
-            num = Math.floor(Math.random() * 9 + 1);
-            if(!currLine.includes(num))
-                continue;
-            currLine.push(num);
-        }
-        
-        //more checks here
-        GridNumbers.push(currLine);
+        // Swap the elements at index i and index j
+        [array[i], array[j]] = [array[j], array[i]];
     }
-}; 
+}
+function fillSquare(grid, row, col) {
+    // Get an array of the numbers 1-9
+    let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-function NumbersOnBoard(){
-    for(let col = 0; col < 9; col++)
-    {
-        for(let row = 1; row < 10; row++)
-        {
-            let newText = document.createElementNS(svgNS, "text");
-            newText.setAttributeNS(null, "x", (col * 50 + 19) .toString(10));
-            newText.setAttributeNS(null, "y", (row * 50 - 17).toString(10));
-            newText.setAttributeNS(null, "font-size", "25");
-            newText.setAttributeNS(null, "fore-color", "red");
-            
-            let text = document.createTextNode("1");
-            newText.appendChild(text);
-            
-            wholeBoard.appendChild(newText);
+    // Shuffle the numbers randomly
+    shuffle(nums);
+
+    // Loop through the rows and columns of the 3x3 square
+    for (let i = row; i < row + 3; i++) {
+        for (let j = col; j < col + 3; j++) {
+            // Set the current cell to the first number in the shuffled array
+            grid[i][j] = nums.shift();
         }
     }
-    
-    document.getElementById("board").appendChild(wholeBoard);
-};
-
-function CreateBoard(){
-    
-    for(let col = 0; col < 9; col++)
-    {
-        for(let row = 0; row < 9; row++)
-        {
-            //Create the tiles
-            let rSquare = document.createElementNS(svgNS, "rect");
-            rSquare.setAttribute("x", (col * 50) .toString(10));
-            rSquare.setAttribute("y", (row * 50).toString(10));
-            rSquare.setAttribute("rx", "10");
-            rSquare.setAttribute("ry", "10");
-            rSquare.setAttribute("fill", "transparent");
-            rSquare.setAttribute("opacity", "1.0");
-            rSquare.setAttribute("stroke", "black");
-            rSquare.setAttribute("stroke-width", "2");
-            rSquare.setAttribute("width", "50");
-            rSquare.setAttribute("height", "50");
-            
-            wholeBoard.appendChild(rSquare);
-            
-            let newText = document.createElementNS(svgNS, "text");
-            newText.setAttributeNS(null, "x", (col * 50) .toString(10));
-            newText.setAttributeNS(null, "y", (row * 50).toString(10));
-            newText.setAttributeNS(null, "font-size", "100");
-            newText.setAttributeNS(null, "fore-color", "red");
-            
-            let text = document.createTextNode("R:" + row.toString(10) + "-C:" + col.toString(10));
-            newText.appendChild(text);
-            
-            wholeBoard.appendChild(newText);
-            
-            wholeBoard.appendChild(text);
+}
+function isValid(grid, row, col, num) {
+    // Check if the current value is already in the same row
+    for (let i = 0; i < 9; i++) {
+        if (grid[row][i] === num) {
+            return false;
         }
     }
-    
-    document.getElementById("board").appendChild(wholeBoard);
-};
 
-function HighlightBoard(){
-    for(let col = 0; col < 10; col++)
-    {
-        for(let row = 0; row < 10; row++)
-        {
-            //Create the tiles
-            let lineRow = document.createElementNS(svgNS, "rect");
-            let lineCol = document.createElementNS(svgNS, "rect");
-            
-            if(row  % 3 === 0){
-                lineRow.setAttribute("x", (col * 50 - 2) .toString(10));
-                lineRow.setAttribute("y", (row  * 50 - 2).toString(10));
-                lineRow.setAttribute("rx", "1");
-                lineRow.setAttribute("ry", "1");
-                lineRow.setAttribute("fill", "black");
-                lineRow.setAttribute("opacity", "1.0");
-                lineRow.setAttribute("stroke", "black");
-                lineRow.setAttribute("stroke-width", "3");
-                lineRow.setAttribute("width", "50");
-                lineRow.setAttribute("height", "3");
-                wholeBoard.appendChild(lineRow);
-            }
-            
-            if(col % 3 === 0){
-                lineCol.setAttribute("x", (col * 50 - 2).toString(10));
-                lineCol.setAttribute("y", (row * 50 - 2).toString(10));
-                lineCol.setAttribute("rx", "1");
-                lineCol.setAttribute("ry", "1");
-                lineCol.setAttribute("fill", "black");
-                lineCol.setAttribute("opacity", "1.0");
-                lineCol.setAttribute("stroke", "black");
-                lineCol.setAttribute("stroke-width", "3");
-                lineCol.setAttribute("width", "3");
-                lineCol.setAttribute("height", "50");
-                wholeBoard.appendChild(lineCol);
+    // Check if the current value is already in the same column
+    for (let j = 0; j < 9; j++) {
+        if (grid[j][col] === num) {
+            return false;
+        }
+    }
+
+    // Check if the current value is already in the same 3x3 square
+    let startRow = Math.floor(row / 3) * 3;
+    let startCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (grid[startRow + i][startCol + j] === num) {
+                return false;
             }
         }
     }
-    
-    document.getElementById("board").appendChild(wholeBoard);
-};
 
-var Tile = {
-    correctNum: 0,
-    selectedNum: null,
-    completed : function(){
-        return this.CorrectNum === this.SelectedNum;
+    // If the current value is not already in the same row, column, or 3x3 square, return true
+    return true;
+}
+function solveSudoku(grid) {
+    // Loop through the rows of the Sudoku grid
+    for (let row = 0; row < 9; row++) {
+
+        // Loop through the columns of the Sudoku grid
+        for (let col = 0; col < 9; col++) {
+
+            // Check if the current cell is empty (has a value of 0)
+            if (grid[row][col] === 0) {
+
+                // Loop through the possible values for the current cell (1-9)
+                for (let num = 1; num <= 9; num++) {
+
+                    // Check if the current value is valid for the current cell
+                    if (isValid(grid, row, col, num)) {
+
+                        // Set the current cell to the current value
+                        grid[row][col] = num;
+
+                        // Recursively call solveSudoku to solve the rest of the puzzle
+                        if (solveSudoku(grid)) {
+                            // If the puzzle is solved, return true
+                            return true;
+                        } else {
+                            // If the puzzle is not solved, backtrack by resetting the current cell to 0
+                            grid[row][col] = 0;
+                        }
+                    }
+                }
+
+                // If no value is valid for the current cell, return false
+                return false;
+            }
+        }
     }
-};
+
+    // If all cells are filled in, return true
+    return true;
+}
+function findEmptyCell(grid) {
+    // Loop through each cell in the grid
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            // If the cell is empty (has a value of 0), return its coordinates
+            if (grid[row][col] === 0) {
+                return [row, col];
+            }
+        }
+    }
+
+    // If there are no empty cells, return [-1, -1] to indicate that the grid is full
+    return [-1, -1];
+}
+
+function solveRecursive(grid, numSolutions) {
+    // Find the first empty cell in the grid
+    let [row, col] = findEmptyCell(grid);
+
+    // If there are no empty cells, the puzzle is solved
+    if (row === -1) {
+        numSolutions++;
+        return numSolutions;
+    }
+
+    // Try each possible value for the empty cell
+    for (let val = 1; val <= 9; val++) {
+        // If the value is valid for the cell, set it and recursively solve the puzzle
+        if (isValid(grid, row, col, val)) {
+            grid[row][col] = val;
+            numSolutions = solveRecursive(grid, numSolutions);
+        }
+    }
+
+    // Backtrack by resetting the current cell and returning to the previous cell
+    grid[row][col] = 0;
+
+    return numSolutions;
+}
+function countSolutions(grid) {
+    // Clone the grid to avoid modifying the original
+    let clonedGrid = JSON.parse(JSON.stringify(grid));
+
+    // Initialize a counter for the number of solutions
+    let numSolutions = 0;
+
+    // Call the solveRecursive function to solve the puzzle
+    numSolutions = solveRecursive(clonedGrid, numSolutions);
+
+    // Return the number of solutions found
+    return numSolutions;
+}
+function removeNumbers(grid, numToRemove) {
+    // Create an array with the indices of all the cells in the grid
+    let cellsToRemove = Array.from({ length: 81 }, (_, i) => i);
+    // Shuffle the array randomly
+    shuffle(cellsToRemove);
+
+    // Loop through the shuffled array of cell indices
+    for (let i = 0; i < cellsToRemove.length && numToRemove > 0; i++) {
+        // Determine the row and column of the current cell
+        let row = Math.floor(cellsToRemove[i] / 9);
+        let col = cellsToRemove[i] % 9;
+
+        // Temporarily remove the value of the cell by setting it to 0
+        let temp = grid[row][col];
+        grid[row][col] = 0;
+
+        // Count the number of solutions to the partially-filled Sudoku puzzle
+        let numSolutions = countSolutions(grid);
+
+        // If there is not exactly one solution, restore the removed value to the cell
+        if (numSolutions !== 1) {
+            grid[row][col] = temp;
+        }
+        // Otherwise, decrement the number of cells to remove
+        else {
+            numToRemove--;
+        }
+    }
+}
+function createSudokuPuzzle() {
+    // Define a 9x9 empty Sudoku grid
+    let grid = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+
+    // Fill in the diagonal 3x3 squares with random numbers
+    for (let i = 0; i < 9; i += 3) {
+        fillSquare(grid, i, i);
+    }
+
+    // Make a copy of the fully solved grid
+    let solvedGrid = JSON.parse(JSON.stringify(grid));
+
+    // Solve the complete Sudoku puzzle
+    solveSudoku(solvedGrid);
+
+    // Remove some numbers to create the puzzle
+    let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
+    removeNumbers(puzzleGrid, 40);
+
+    return { solvedGrid, puzzleGrid };
+}
+
+// Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
+const { solvedGrid, puzzleGrid } = createSudokuPuzzle();
+
+// Log the fully solved grid to the console
+console.log("Fully solved grid:");
+console.log(solvedGrid);
+
+// Log the modified grid with some numbers removed to the console
+console.log("Modified grid with some numbers removed:");
+console.log(puzzleGrid);
