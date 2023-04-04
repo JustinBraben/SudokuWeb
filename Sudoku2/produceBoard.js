@@ -335,7 +335,6 @@ function updateBoardTable() {
     }
 }
 
-
 function createBoardTableVisual() {
     console.log("Board is :");
     console.log(board);
@@ -405,7 +404,6 @@ function createBoardTableVisual() {
     boardElement.appendChild(tbody);
 };
 
-
 window.addEventListener("load", function () {
     // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
     const { solvedGrid, puzzleGrid } = createSudokuPuzzle();
@@ -420,3 +418,14 @@ window.addEventListener("load", function () {
 
     createBoardTableVisual();
 });
+
+const cells = document.querySelectorAll('.cell');
+
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    cells.forEach(cell => cell.classList.toggle('dark-mode'));
+}
+
+const darkModeButton = document.getElementById('dark-mode-button');
+darkModeButton.addEventListener('click', toggleDarkMode);

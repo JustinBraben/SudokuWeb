@@ -1,3 +1,4 @@
+/* Light mode */
 /* Style for the Sudoku board cells */
 .cell {
     width: 50px;
@@ -23,53 +24,112 @@
 }
 
 h1 {
-  font-family: 'Lobster', sans-serif;
-  text-align: center;
+    font-family: 'Lobster', sans-serif;
+    text-align: center;
 }
 
-
-
 #board {
-  margin: 0 auto;
-  background-color: #f2f2f2;
-  border-collapse: collapse;
+    margin: 0 auto;
+    background-color: #f2f2f2;
+    border-collapse: collapse;
 }
 
 #board td {
-  padding: 5px;
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    border: 1px solid #ccc;
 }
 
 #board tr:first-child {
-  border-top: 3px solid black;
+    border-top: 3px solid black;
 }
 
 #board td:nth-child(3n) {
-  border-right: 3px solid black;
+    border-right: 3px solid black;
 }
 
 #board .cell:hover {
-  background-color: #ffe6e6;
+    background-color: #ffe6e6;
 }
 
 .highlighted {
-  background-color: #b3d9ff;
+    background-color: #b3d9ff;
 }
 
 .highlight-same {
-  background-color: #e6ffe6;
+    background-color: #e6ffe6;
 }
 
 /* Every third row */
 tr:nth-child(3n) {
-  border-bottom: 3px solid black;
+    border-bottom: 3px solid black;
 }
 
 /* Darker border color for every third column */
 tr:nth-child(n) {
   border-right: 3px solid black;
   border-left: 3px solid black
+}
+
+/* Dark mode */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+.cell.dark-mode {
+    background-color: #333;
+    color: #fff;
+    border-color: #fff;
+}
+
+.row.dark-mode {
+    background-color: #333;
+}
+
+.column.dark-mode {
+    background-color: #444;
+}
+
+.square.dark-mode {
+    background-color: #555;
+}
+
+#board.dark-mode {
+    background-color: #444;
+    border-color: #777;
+}
+
+#board.dark-mode td {
+    border-color: #777;
+}
+
+#board.dark-mode tr:first-child {
+    border-top-color: #fff;
+}
+
+#board.dark-mode td:nth-child(3n) {
+    border-right-color: #fff;
+}
+
+#board.dark-mode .cell:hover {
+    background-color: #222;
+}
+
+.highlighted.dark-mode {
+    background-color: #007aff;
+}
+
+.highlight-same.dark-mode {
+    background-color: #1aff8c;
+}
+
+tr:nth-child(3n).dark-mode {
+    border-bottom-color: #fff;
+}
+
+td:nth-child(3n).dark-mode {
+    border-right-color: #fff;
 }
