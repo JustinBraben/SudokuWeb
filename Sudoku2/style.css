@@ -1,3 +1,55 @@
-svg{
-    background-color: beige;
+/* Style for the Sudoku board cells */
+.cell {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 24px;
+    border: 1px solid black;
+}
+
+/* Style for the cells in the same row as the selected cell */
+.row {
+    background-color: #eee;
+}
+
+/* Style for the cells in the same column as the selected cell */
+.column {
+    background-color: #ddd;
+}
+
+/* Style for the cells in the same 3x3 square as the selected cell */
+.square {
+    background-color: #ccc;
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Zest', cursive;
+}
+
+
+#board {
+  margin: 0 auto;
+  background-color: #f2f2f2;
+  border-collapse: collapse;
+}
+
+#board td {
+  padding: 5px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+}
+
+#board .cell:hover {
+  background-color: #ffe6e6;
+}
+
+.highlight {
+  background-color: #b3d9ff;
+}
+
+.highlight-same {
+  background-color: #e6ffe6;
 }

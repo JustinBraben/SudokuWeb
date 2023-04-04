@@ -1,3 +1,5 @@
+let board = [];
+
 function shuffle(array) {
     // Loop through the array from the end to the beginning
     for (let i = array.length - 1; i > 0; i--) {
@@ -191,16 +193,171 @@ function createSudokuPuzzle() {
     let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
     removeNumbers(puzzleGrid, 40);
 
+    board = puzzleGrid;
+
     return { solvedGrid, puzzleGrid };
 }
 
-// Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
-const { solvedGrid, puzzleGrid } = createSudokuPuzzle();
+// Function to highlight cells in the same row, column, and square
+function highlightCells(row, col, boardElement, type) {
+    // Highlight cells in the same row and column
+    for (let i = 0; i < 9; i++) {
+        let cell = boardElement.rows[i].cells[col];
+        if (i !== row) {
+            cell.classList.add("highlighted");
+        } else {
+            cell.classList.add("current");
+        }
+        if (type) {
+            //console.log(`Highlighting ${type} at row ${i}, col ${col}`);
+        }
+    }
 
-// Log the fully solved grid to the console
-console.log("Fully solved grid:");
-console.log(solvedGrid);
+    for (let j = 0; j < 9; j++) {
+        let cell = boardElement.rows[row].cells[j];
+        if (j !== col) {
+            cell.classList.add("highlighted");
+        } else {
+            cell.classList.add("current");
+        }
+        if (type) {
+            //console.log(`Highlighting ${type} at row ${row}, col ${j}`);
+        }
+    }
 
-// Log the modified grid with some numbers removed to the console
-console.log("Modified grid with some numbers removed:");
-console.log(puzzleGrid);
+    // Highlight cells in the same square
+    let squareRow = Math.floor(row / 3) * 3;
+    let squareCol = Math.floor(col / 3) * 3;
+    for (let i = squareRow; i < squareRow + 3; i++) {
+        for (let j = squareCol; j < squareCol + 3; j++) {
+            let cell = boardElement.rows[i].cells[j];
+            if (i !== row || j !== col) {
+                cell.classList.add("highlighted");
+            } else {
+                cell.classList.add("current");
+            }
+            if (type) {
+                //console.log(`Highlighting ${type} at row ${i}, col ${j}`);
+            }
+        }
+    }
+}
+
+function clearHighlights(type) {
+    let highlighted = document.querySelectorAll(".highlighted");
+    let current = document.querySelectorAll(".current");
+    highlighted.forEach((cell) => {
+        cell.classList.remove("highlighted");
+    });
+    current.forEach((cell) => {
+        cell.classList.remove("current");
+    });
+    if (type) {
+        //console.log(`Clearing highlights for ${type}`);
+    }
+}
+
+// Function to handle user input from keyboard
+function handleInput(cell, i, j) {
+    const value = parseInt(cell.textContent);
+    if (!isNaN(value)) {
+        board[i][j] = value;
+    } else {
+        board[i][j] = 0;
+    }
+}
+
+function handleKeyDown(event, i, j) {
+    switch (event.code) {
+        case "ArrowUp":
+            if (i > 0) {
+                document.getElementById(`cell-${i - 1}-${j}`).focus();
+            }
+            break;
+        case "ArrowDown":
+            if (i < 8) {
+                document.getElementById(`cell-${i + 1}-${j}`).focus();
+            }
+            break;
+        case "ArrowLeft":
+            if (j > 0) {
+                document.getElementById(`cell-${i}-${j - 1}`).focus();
+            }
+            break;
+        case "ArrowRight":
+            if (j < 8) {
+                document.getElementById(`cell-${i}-${j + 1}`).focus();
+            }
+            break;
+        default:
+            if (event.keyCode >= 48 && event.keyCode <= 57) {
+                board[i][j] = parseInt(event.key);
+            } else {
+                event.preventDefault();
+            }
+            break;
+    }
+}
+
+
+function createBoardTableVisual() {
+    console.log("Board is :");
+    console.log(board);
+
+    // Get the table element from the HTML document
+    let boardElement = document.getElementById("board");
+
+    // Create a tbody element
+    let tbody = document.createElement("tbody");
+
+    // Populate the board with cells
+    for (let i = 0; i < 9; i++) {
+        let row = document.createElement("tr");
+        for (let j = 0; j < 9; j++) {
+            let cell = document.createElement("td");
+            let type = board[i][j];
+            cell.classList.add("cell");
+
+            // Set the value of the cell from the board array
+            cell.textContent = board[i][j] === 0 ? "" : board[i][j];
+
+            // Add click event listener to the cell
+            cell.addEventListener("click", function () {
+                // Handle the click event here
+                console.log(`Clicked cell (${i}, ${j})`);
+            });
+
+            cell.addEventListener("mouseover", () => {
+                highlightCells(i, j, boardElement, type);
+            });
+
+            cell.addEventListener("mouseout", () => {
+                clearHighlights(type);
+            });
+
+            // Append the cell to the row
+            row.appendChild(cell);
+        }
+
+        // Append the row to the tbody
+        tbody.appendChild(row);
+    }
+
+    // Append the tbody to the table
+    boardElement.appendChild(tbody);
+};
+
+window.addEventListener("load", function () {
+    // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
+    const { solvedGrid, puzzleGrid } = createSudokuPuzzle();
+
+    // Log the fully solved grid to the console
+    console.log("Fully solved grid:");
+    console.log(solvedGrid);
+
+    // Log the modified grid with some numbers removed to the console
+    console.log("Modified grid with some numbers removed:");
+    console.log(puzzleGrid);
+
+    createBoardTableVisual();
+});
