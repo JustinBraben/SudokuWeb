@@ -1,12 +1,14 @@
 const darkModeButton = document.getElementById('dark-mode-button');
 const timerElem = document.getElementById('timer');
 const cells = document.querySelectorAll('.cell');
+const sliderContainer = document.querySelectorAll('.slider-container');
 
 let board = [];
 let seconds = 0;
 let minutes = 0;
 let timer = setInterval(gameTimer, 1000);
 let timeToCreateSudoku = 0;
+let difficulty = 30;
 
 // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
 let solvedBoard = createSudokuPuzzle();
@@ -21,6 +23,27 @@ function shuffle(array) {
         // Swap the elements at index i and index j
         [array[i], array[j]] = [array[j], array[i]];
     }
+};
+
+function setDifficulty() {
+    let difficultySlider = document.getElementById("difficulty-slider");
+    let difficultyLabel = document.getElementById("difficulty-label");
+    let numCellsToRemove;
+    switch (difficultySlider.value) {
+        case "1":
+            numCellsToRemove = 30;
+            break;
+        case "2":
+            numCellsToRemove = 40;
+            break;
+        case "3":
+            numCellsToRemove = 50;
+            break;
+        default:
+            numCellsToRemove = 30;
+            break;
+    }
+    return numCellsToRemove;
 }
 
 // Fills one sudoku square
@@ -38,7 +61,7 @@ function fillSquare(grid, row, col) {
             grid[i][j] = nums.shift();
         }
     }
-}
+};
 
 function isValid(grid, row, col, num) {
     // Check if the current value is already in the same row
@@ -68,7 +91,7 @@ function isValid(grid, row, col, num) {
 
     // If the current value is not already in the same row, column, or 3x3 square, return true
     return true;
-}
+};
 
 function solveSudoku(grid) {
     // Loop through the rows of the Sudoku grid
@@ -108,7 +131,8 @@ function solveSudoku(grid) {
 
     // If all cells are filled in, return true
     return true;
-}
+};
+
 function findEmptyCell(grid) {
     // Loop through each cell in the grid
     for (let row = 0; row < 9; row++) {
@@ -122,7 +146,8 @@ function findEmptyCell(grid) {
 
     // If there are no empty cells, return [-1, -1] to indicate that the grid is full
     return [-1, -1];
-}
+};
+
 function solveRecursive(grid, numSolutions) {
     // Find the first empty cell in the grid
     let [row, col] = findEmptyCell(grid);
@@ -146,7 +171,8 @@ function solveRecursive(grid, numSolutions) {
     grid[row][col] = 0;
 
     return numSolutions;
-}
+};
+
 function countSolutions(grid) {
     // Clone the grid to avoid modifying the original
     let clonedGrid = JSON.parse(JSON.stringify(grid));
@@ -159,7 +185,8 @@ function countSolutions(grid) {
 
     // Return the number of solutions found
     return numSolutions;
-}
+};
+
 function removeNumbers(grid, numToRemove) {
     // Create an array with the indices of all the cells in the grid
     let cellsToRemove = Array.from({ length: 81 }, (_, i) => i);
@@ -188,7 +215,8 @@ function removeNumbers(grid, numToRemove) {
             numToRemove--;
         }
     }
-}
+};
+
 function createSudokuPuzzle() {
     // Define a 9x9 empty Sudoku grid
     let grid = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
@@ -217,12 +245,14 @@ function createSudokuPuzzle() {
 
     // Remove some numbers to create the puzzle
     let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
-    removeNumbers(puzzleGrid, 3);
+
+    removeNumbers(puzzleGrid, difficulty);
 
     board = puzzleGrid;
 
     return solvedGrid;
-}
+};
+
 // Function to highlight cells in the same row, column, and square
 function highlightCells(row, col, boardElement, type) {
     // Highlight cells in the same row and column
@@ -266,7 +296,8 @@ function highlightCells(row, col, boardElement, type) {
             }
         }
     }
-}
+};
+
 function clearHighlights(type) {
     let highlighted = document.querySelectorAll(".highlighted");
     let current = document.querySelectorAll(".current");
@@ -279,14 +310,16 @@ function clearHighlights(type) {
     if (type) {
         //console.log(`Clearing highlights for ${type}`);
     }
-}
+};
+
 function isValidInput(value, row, col, board) {
     if (value === solvedBoard[row][col]) {
         console.log(`Clicked (${value}) is correct!`);
         return true;
     }
     return false;
-}
+};
+
 // Function to handle user input from keyboard
 function handleInput(event, i, j, selectedCell) {
     let inputValue = event.target.value;
@@ -297,7 +330,8 @@ function handleInput(event, i, j, selectedCell) {
     } else {
         selectedCell.classList.add("error");
     }
-}
+};
+
 function handleKeyDown(event, row, col, selectedCell) {
     const guessBanner = document.getElementById("guessBanner");
     if (board[row][col] != 0) {
@@ -332,7 +366,8 @@ function handleKeyDown(event, row, col, selectedCell) {
             board[row][col] = 0;
         }
     }
-}
+};
+
 function updateBoardTable() {
     // Get the table element from the HTML document
     let boardElement = document.getElementById("board");
@@ -344,7 +379,8 @@ function updateBoardTable() {
             cell.textContent = board[i][j] === 0 ? "" : board[i][j];
         }
     }
-}
+};
+
 function createBoardTableVisual() {
     console.log("Board is :");
     console.log(board);
@@ -415,11 +451,14 @@ function createBoardTableVisual() {
     // Append the tbody to the table
     boardElement.appendChild(tbody);
 };
+
 function toggleDarkMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
     cells.forEach(cell => cell.classList.toggle('dark-mode'));
-}
+    sliderContainer.forEach(cell => cell.classList.toggle('dark-mode'));
+};
+
 function gameTimer() {
     seconds++;
     if (seconds == 60) {
@@ -428,7 +467,8 @@ function gameTimer() {
     }
     var timerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
     document.getElementById("timer").innerHTML = timerText;
-}
+};
+
 function newGame() {
     // Log the fully solved grid to the console
     solvedBoard = createSudokuPuzzle();
@@ -447,19 +487,22 @@ function newGame() {
     timer = setInterval(gameTimer, 1000);
 
     setEmptyBanner();
-}
+};
+
 function setEmptyBanner() {
     let banner = document.getElementById("guessBanner");
     banner.className = "";
     banner.classList.add("empty");
     document.getElementById("guessBanner").innerHTML = "";
-}
+};
+
 function setWinBanner() {
     let banner = document.getElementById("guessBanner");
     banner.className = "";
     banner.classList.add("correct");
     document.getElementById("guessBanner").innerHTML = "Congratulations, you won! Would you like to play again?";
-}
+};
+
 function arraysAreEqual(arr1, arr2) {
     // Check if the arrays have the same length
     if (arr1.length !== arr2.length) {
@@ -480,7 +523,8 @@ function arraysAreEqual(arr1, arr2) {
 
     // If the arrays have the same length and all elements are identical, they are equal
     return true;
-}
+};
+
 window.addEventListener("load", function () {
 
     // Log the fully solved grid to the console
@@ -491,5 +535,30 @@ window.addEventListener("load", function () {
     console.log("Modified grid with some numbers removed:");
     console.log(board);
 
+    // Set difficulty of the game via the difficulty slider
+    difficulty = setDifficulty();
+    console.log(`Difficulty is set to (${difficulty})`);
     createBoardTableVisual();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    let difficultySlider = document.getElementById("difficulty-slider");
+    let difficultyLabel = document.getElementById("difficulty-label");
+
+    difficultySlider.addEventListener("input", function () {
+        switch (difficultySlider.value) {
+            case "1":
+                difficultyLabel.textContent = "Easy";
+                break;
+            case "2":
+                difficultyLabel.textContent = "Medium";
+                break;
+            case "3":
+                difficultyLabel.textContent = "Hard";
+                break;
+            default:
+                difficultyLabel.textContent = "Easy";
+                break;
+        }
+    })
 });
