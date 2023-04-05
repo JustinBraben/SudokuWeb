@@ -299,6 +299,11 @@ function handleInput(event, i, j, selectedCell) {
     }
 }
 function handleKeyDown(event, row, col, selectedCell) {
+    const guessBanner = document.getElementById("guessBanner");
+    if (board[row][col] != 0) {
+        //console.log(`Can't guess here`);
+        return;
+    }
     if (selectedCell) {
         if (event.keyCode >= 49 && event.keyCode <= 57) {
             let value = event.keyCode - 48;
@@ -307,8 +312,14 @@ function handleKeyDown(event, row, col, selectedCell) {
                 board[row][col] = value;
                 selectedCell.textContent = value;
                 updateBoardTable();
+                document.getElementById("guessBanner").innerHTML = "Correct";
+                document.getElementById("guessBanner").classList.remove("incorrect");
+                document.getElementById("guessBanner").classList.add("correct");
             } else {
-                alert("Oops! Incorrect guess.");
+                selectedCell.textContent = "";
+                document.getElementById("guessBanner").innerHTML = "Incorrect";
+                document.getElementById("guessBanner").classList.remove("correct");
+                document.getElementById("guessBanner").classList.add("incorrect");
             }
         } else if (event.keyCode === 8 || event.keyCode === 46) {
             selectedCell.textContent = "";
@@ -371,6 +382,7 @@ function createBoardTableVisual() {
                 console.log(`Clicked cell (${i}, ${j}) number in this cell should be (${solvedBoard[i][j]})`);
                 selectedCell.row = i;
                 selectedCell.col = j;
+                cell.focus();
             });
 
             cell.addEventListener("keydown", function (event) {

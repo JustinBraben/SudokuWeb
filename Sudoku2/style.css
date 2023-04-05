@@ -1,45 +1,25 @@
-/* Light mode */
-/* Style for the Sudoku board cells */
-.cell {
-    width: 50px;
-    height: 50px;
-    text-align: center;
-    font-size: 24px;
-    border: 1px solid black;
+/* Set the background color of the page */
+body {
+    background-color: #f0f0f0;
+    transition: background-color 0.5s ease;
 }
 
-/* Style for the cells in the same row as the selected cell */
-.row {
-    background-color: #eee;
-}
-
-/* Style for the cells in the same column as the selected cell */
-.column {
-    background-color: #ddd;
-}
-
-/* Style for the cells in the same 3x3 square as the selected cell */
-.square {
-    background-color: #ccc;
-}
-
-h1 {
-    font-family: 'Lobster', sans-serif;
-    text-align: center;
-}
-
+/* Style the Sudoku board */
 #board {
-    margin: 0 auto;
-    background-color: #f2f2f2;
     border-collapse: collapse;
+    margin: auto;
+    width: 500px;
+    height: 500px;
+    transition: background-color 0.5s ease;
 }
 
 #board td {
-    padding: 5px;
+    border: 1px solid black;
+    width: 50px;
+    height: 50px;
     text-align: center;
     font-size: 20px;
     font-weight: bold;
-    border: 1px solid #ccc;
 }
 
 #board tr:first-child {
@@ -50,9 +30,16 @@ h1 {
     border-right: 3px solid black;
 }
 
-#board .cell:hover {
-    background-color: #ffe6e6;
+tr:nth-child(3n) {
+    border-bottom: 3px solid black;
 }
+
+tr:nth-child(n) {
+  border-right: 3px solid black;
+  border-left: 3px solid black;
+}
+
+/* Highlights */
 
 .highlighted {
     background-color: #b3d9ff;
@@ -62,15 +49,46 @@ h1 {
     background-color: #e6ffe6;
 }
 
-/* Every third row */
-tr:nth-child(3n) {
-    border-bottom: 3px solid black;
+/* Dark mode */
+body.dark-mode {
+    background-color: #333333;
+    color: #f0f0f0;
 }
 
-/* Darker border color for every third column */
-tr:nth-child(n) {
-  border-right: 3px solid black;
-  border-left: 3px solid black
+body.dark-mode #board td {
+    border: 1px solid #f0f0f0;
+}
+
+body.dark-mode #board tr:first-child {
+    border-top: 3px solid #f0f0f0;
+}
+
+body.dark-mode #board td:nth-child(3n) {
+    border-right: 3px solid #f0f0f0;
+}
+
+body.dark-mode tr:nth-child(3n) {
+    border-bottom: 3px solid #f0f0f0;
+}
+
+body.dark-mode tr:nth-child(n) {
+  border-right: 3px solid #f0f0f0;
+  border-left: 3px solid #f0f0f0
+}
+
+.highlighted.dark-mode {
+    background-color: #007aff;
+}
+
+.highlight-same.dark-mode {
+    background-color: #1aff8c;
+}
+
+/*//////////////////////////////////////////////////////////////////////////*/
+
+h1 {
+    font-family: 'Lobster', sans-serif;
+    text-align: center;
 }
 
 button {
@@ -99,64 +117,23 @@ button:hover {
   text-align: center;
 }
 
-
-/* Dark mode */
-body.dark-mode {
-    background-color: #1a1a1a;
-    color: #fff;
+#guessBanner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.cell.dark-mode {
-    background-color: #333;
-    color: #fff;
-    border-color: #fff;
+.correct {
+  background-color: green;
+  color: white;
 }
 
-.row.dark-mode {
-    background-color: #333;
-}
-
-.column.dark-mode {
-    background-color: #444;
-}
-
-.square.dark-mode {
-    background-color: #555;
-}
-
-#board.dark-mode {
-    background-color: #444;
-    border-color: #777;
-}
-
-#board.dark-mode td {
-    border-color: #777;
-}
-
-#board.dark-mode tr:first-child {
-    border-top-color: #fff;
-}
-
-#board.dark-mode td:nth-child(3n) {
-    border-right-color: #fff;
-}
-
-#board.dark-mode .cell:hover {
-    background-color: #222;
-}
-
-.highlighted.dark-mode {
-    background-color: #007aff;
-}
-
-.highlight-same.dark-mode {
-    background-color: #1aff8c;
-}
-
-tr:nth-child(3n).dark-mode {
-    border-bottom-color: #fff;
-}
-
-td:nth-child(3n).dark-mode {
-    border-right-color: #fff;
+.incorrect {
+  background-color: red;
+  color: white;
 }
