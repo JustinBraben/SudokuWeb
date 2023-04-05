@@ -1,4 +1,17 @@
+const darkModeButton = document.getElementById('dark-mode-button');
+const timerElem = document.getElementById('timer');
+const cells = document.querySelectorAll('.cell');
+
 let board = [];
+let seconds = 0;
+let minutes = 0;
+let timer = setInterval(gameTimer, 1000);
+let timeToCreateSudoku = 0;
+
+// Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
+let solvedBoard = createSudokuPuzzle();
+
+// Function used to shuffle numbers when making a sudoku grid
 function shuffle(array) {
     // Loop through the array from the end to the beginning
     for (let i = array.length - 1; i > 0; i--) {
@@ -9,6 +22,8 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
+
+// Fills one sudoku square
 function fillSquare(grid, row, col) {
     // Get an array of the numbers 1-9
     let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -24,6 +39,7 @@ function fillSquare(grid, row, col) {
         }
     }
 }
+
 function isValid(grid, row, col, num) {
     // Check if the current value is already in the same row
     for (let i = 0; i < 9; i++) {
@@ -53,6 +69,7 @@ function isValid(grid, row, col, num) {
     // If the current value is not already in the same row, column, or 3x3 square, return true
     return true;
 }
+
 function solveSudoku(grid) {
     // Loop through the rows of the Sudoku grid
     for (let row = 0; row < 9; row++) {
@@ -184,8 +201,19 @@ function createSudokuPuzzle() {
     // Make a copy of the fully solved grid
     let solvedGrid = JSON.parse(JSON.stringify(grid));
 
+    // Measure the starting time
+    let startTime = Date.now();
+
     // Solve the complete Sudoku puzzle
     solveSudoku(solvedGrid);
+
+    // Measure the ending time
+    let endTime = Date.now();
+
+    // Calculate the elapsed time in milliseconds
+    let elapsedTime = endTime - startTime;
+
+    console.log(`Elapsed time: ${elapsedTime} ms`);
 
     // Remove some numbers to create the puzzle
     let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
@@ -300,8 +328,6 @@ function updateBoardTable() {
         }
     }
 }
-// Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
-let solvedBoard = createSudokuPuzzle();
 function createBoardTableVisual() {
     console.log("Board is :");
     console.log(board);
@@ -370,16 +396,11 @@ function createBoardTableVisual() {
     // Append the tbody to the table
     boardElement.appendChild(tbody);
 };
-const cells = document.querySelectorAll('.cell');
 function toggleDarkMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
     cells.forEach(cell => cell.classList.toggle('dark-mode'));
 }
-const darkModeButton = document.getElementById('dark-mode-button');
-const timerElem = document.getElementById('timer');
-let seconds = 0;
-let minutes = 0;
 function gameTimer() {
     seconds++;
     if (seconds == 60) {
@@ -389,7 +410,6 @@ function gameTimer() {
     var timerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
     document.getElementById("timer").innerHTML = timerText;
 }
-var timer = setInterval(gameTimer, 1000);
 function newGame() {
     // Log the fully solved grid to the console
     solvedBoard = createSudokuPuzzle();
