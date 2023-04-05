@@ -1,5 +1,4 @@
 let board = [];
-
 function shuffle(array) {
     // Loop through the array from the end to the beginning
     for (let i = array.length - 1; i > 0; i--) {
@@ -271,7 +270,6 @@ function handleInput(event, i, j, selectedCell) {
         selectedCell.classList.add("error");
     }
 }
-
 function handleKeyDown(event, row, col, selectedCell) {
     if (selectedCell) {
         if (event.keyCode >= 49 && event.keyCode <= 57) {
@@ -290,7 +288,6 @@ function handleKeyDown(event, row, col, selectedCell) {
         }
     }
 }
-
 function updateBoardTable() {
     // Get the table element from the HTML document
     let boardElement = document.getElementById("board");
@@ -303,10 +300,8 @@ function updateBoardTable() {
         }
     }
 }
-
 // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
 let solvedBoard = createSudokuPuzzle();
-
 function createBoardTableVisual() {
     console.log("Board is :");
     console.log(board);
@@ -375,7 +370,43 @@ function createBoardTableVisual() {
     // Append the tbody to the table
     boardElement.appendChild(tbody);
 };
+const cells = document.querySelectorAll('.cell');
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    cells.forEach(cell => cell.classList.toggle('dark-mode'));
+}
+const darkModeButton = document.getElementById('dark-mode-button');
+const timerElem = document.getElementById('timer');
+let seconds = 0;
+let minutes = 0;
+function gameTimer() {
+    seconds++;
+    if (seconds == 60) {
+        seconds = 0;
+        minutes++;
+    }
+    var timerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+    document.getElementById("timer").innerHTML = timerText;
+}
+var timer = setInterval(gameTimer, 1000);
+function newGame() {
+    // Log the fully solved grid to the console
+    solvedBoard = createSudokuPuzzle();
+    console.log("Fully solved grid:");
+    console.log(solvedBoard);
 
+    // Log the modified grid with some numbers removed to the console
+    console.log("Modified grid with some numbers removed:");
+    console.log(board);
+
+    updateBoardTable();
+    clearInterval(timer);
+    seconds = 0;
+    minutes = 0;
+    document.getElementById("timer").innerHTML = "00:00";
+    timer = setInterval(gameTimer, 1000);
+}
 window.addEventListener("load", function () {
 
     // Log the fully solved grid to the console
@@ -388,27 +419,3 @@ window.addEventListener("load", function () {
 
     createBoardTableVisual();
 });
-
-const cells = document.querySelectorAll('.cell');
-
-function toggleDarkMode() {
-    const body = document.body;
-    body.classList.toggle('dark-mode');
-    cells.forEach(cell => cell.classList.toggle('dark-mode'));
-}
-
-const darkModeButton = document.getElementById('dark-mode-button');
-darkModeButton.addEventListener('click', toggleDarkMode);
-
-function newGame() {
-    // Log the fully solved grid to the console
-    solvedBoard = createSudokuPuzzle();
-    console.log("Fully solved grid:");
-    console.log(solvedBoard);
-
-    // Log the modified grid with some numbers removed to the console
-    console.log("Modified grid with some numbers removed:");
-    console.log(board);
-
-    updateBoardTable();
-}
