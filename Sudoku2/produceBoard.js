@@ -217,7 +217,7 @@ function createSudokuPuzzle() {
 
     // Remove some numbers to create the puzzle
     let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
-    removeNumbers(puzzleGrid, 40);
+    removeNumbers(puzzleGrid, 3);
 
     board = puzzleGrid;
 
@@ -314,11 +314,17 @@ function handleKeyDown(event, row, col, selectedCell) {
                 updateBoardTable();
                 document.getElementById("guessBanner").innerHTML = "Correct";
                 document.getElementById("guessBanner").classList.remove("incorrect");
+                document.getElementById("guessBanner").classList.remove("empty");
                 document.getElementById("guessBanner").classList.add("correct");
+                if (arraysAreEqual(board, solvedBoard)) {
+                    clearInterval(timer);
+                    setWinBanner();
+                }
             } else {
                 selectedCell.textContent = "";
                 document.getElementById("guessBanner").innerHTML = "Incorrect";
                 document.getElementById("guessBanner").classList.remove("correct");
+                document.getElementById("guessBanner").classList.remove("empty");
                 document.getElementById("guessBanner").classList.add("incorrect");
             }
         } else if (event.keyCode === 8 || event.keyCode === 46) {
@@ -383,6 +389,7 @@ function createBoardTableVisual() {
                 selectedCell.row = i;
                 selectedCell.col = j;
                 cell.focus();
+                setEmptyBanner();
             });
 
             cell.addEventListener("keydown", function (event) {
@@ -438,6 +445,41 @@ function newGame() {
     minutes = 0;
     document.getElementById("timer").innerHTML = "00:00";
     timer = setInterval(gameTimer, 1000);
+
+    setEmptyBanner();
+}
+function setEmptyBanner() {
+    let banner = document.getElementById("guessBanner");
+    banner.className = "";
+    banner.classList.add("empty");
+    document.getElementById("guessBanner").innerHTML = "";
+}
+function setWinBanner() {
+    let banner = document.getElementById("guessBanner");
+    banner.className = "";
+    banner.classList.add("correct");
+    document.getElementById("guessBanner").innerHTML = "Congratulations, you won! Would you like to play again?";
+}
+function arraysAreEqual(arr1, arr2) {
+    // Check if the arrays have the same length
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    // Check if each element of the arrays is identical
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i].length !== arr2[i].length) {
+            return false;
+        }
+        for (let j = 0; j < arr1[i].length; j++) {
+            if (arr1[i][j] !== arr2[i][j]) {
+                return false;
+            }
+        }
+    }
+
+    // If the arrays have the same length and all elements are identical, they are equal
+    return true;
 }
 window.addEventListener("load", function () {
 

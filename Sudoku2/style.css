@@ -126,14 +126,24 @@ button:hover {
   border-radius: 5px;
   font-size: 18px;
   font-weight: bold;
+  width: fit-content;
+  margin: 10px auto;
 }
 
 .correct {
   background-color: green;
   color: white;
+  transition: background-color 1.0s;
 }
 
 .incorrect {
   background-color: red;
   color: white;
+  transition: background-color 1.0s;
+}
+
+.empty {
+  background-color: transparent;
+  color: black;
+  transition: background-color 1.0s;
 }
