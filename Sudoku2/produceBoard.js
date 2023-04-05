@@ -1,5 +1,4 @@
 let board = [];
-let solvedBoard = [];
 
 function shuffle(array) {
     // Loop through the array from the end to the beginning
@@ -108,7 +107,6 @@ function findEmptyCell(grid) {
     // If there are no empty cells, return [-1, -1] to indicate that the grid is full
     return [-1, -1];
 }
-
 function solveRecursive(grid, numSolutions) {
     // Find the first empty cell in the grid
     let [row, col] = findEmptyCell(grid);
@@ -194,13 +192,10 @@ function createSudokuPuzzle() {
     let puzzleGrid = JSON.parse(JSON.stringify(solvedGrid));
     removeNumbers(puzzleGrid, 40);
 
-    solvedBoard = solvedGrid;
-
     board = puzzleGrid;
 
-    return { solvedGrid, puzzleGrid };
+    return solvedGrid;
 }
-
 // Function to highlight cells in the same row, column, and square
 function highlightCells(row, col, boardElement, type) {
     // Highlight cells in the same row and column
@@ -245,7 +240,6 @@ function highlightCells(row, col, boardElement, type) {
         }
     }
 }
-
 function clearHighlights(type) {
     let highlighted = document.querySelectorAll(".highlighted");
     let current = document.querySelectorAll(".current");
@@ -259,38 +253,13 @@ function clearHighlights(type) {
         //console.log(`Clearing highlights for ${type}`);
     }
 }
-
 function isValidInput(value, row, col, board) {
-    // Check if the value is already present in the same row
-    for (let j = 0; j < 9; j++) {
-        if (board[row][j] === value) {
-            return false;
-        }
+    if (value === solvedBoard[row][col]) {
+        console.log(`Clicked (${value}) is correct!`);
+        return true;
     }
-
-    // Check if the value is already present in the same column
-    for (let i = 0; i < 9; i++) {
-        if (board[i][col] === value) {
-            return false;
-        }
-    }
-
-    // Check if the value is already present in the same 3x3 box
-    let boxRow = Math.floor(row / 3) * 3;
-    let boxCol = Math.floor(col / 3) * 3;
-    for (let i = boxRow; i < boxRow + 3; i++) {
-        for (let j = boxCol; j < boxCol + 3; j++) {
-            if (board[i][j] === value) {
-                return false;
-            }
-        }
-    }
-
-    // If the value is not present in the same row, column, or 3x3 box, it is a valid input
-    return true;
+    return false;
 }
-
-
 // Function to handle user input from keyboard
 function handleInput(event, i, j, selectedCell) {
     let inputValue = event.target.value;
@@ -307,7 +276,7 @@ function handleKeyDown(event, row, col, selectedCell) {
     if (selectedCell) {
         if (event.keyCode >= 49 && event.keyCode <= 57) {
             let value = event.keyCode - 48;
-            console.log(`Clicked (${value})`);
+            //console.log(`Clicked (${value})`);
             if (isValidInput(value, row, col, board)) {
                 board[row][col] = value;
                 selectedCell.textContent = value;
@@ -334,6 +303,9 @@ function updateBoardTable() {
         }
     }
 }
+
+// Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
+let solvedBoard = createSudokuPuzzle();
 
 function createBoardTableVisual() {
     console.log("Board is :");
@@ -366,7 +338,7 @@ function createBoardTableVisual() {
                 highlightCells(i, j, boardElement, type);
                 selectedCell.row = i;
                 selectedCell.col = j;
-                console.log(`Mousing over (${i}, ${j})`);
+                //console.log(`Mousing over (${i}, ${j})`);
             });
 
             cell.addEventListener("mouseout", () => {
@@ -375,7 +347,7 @@ function createBoardTableVisual() {
 
             // Set the row and column indices of the selected cell to the current cell's indices when the cell is clicked
             cell.addEventListener("click", () => {
-                console.log(`Clicked cell (${i}, ${j})`);
+                console.log(`Clicked cell (${i}, ${j}) number in this cell should be (${solvedBoard[i][j]})`);
                 selectedCell.row = i;
                 selectedCell.col = j;
             });
@@ -405,16 +377,14 @@ function createBoardTableVisual() {
 };
 
 window.addEventListener("load", function () {
-    // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
-    const { solvedGrid, puzzleGrid } = createSudokuPuzzle();
 
     // Log the fully solved grid to the console
     console.log("Fully solved grid:");
-    console.log(solvedGrid);
+    console.log(solvedBoard);
 
     // Log the modified grid with some numbers removed to the console
     console.log("Modified grid with some numbers removed:");
-    console.log(puzzleGrid);
+    console.log(board);
 
     createBoardTableVisual();
 });
@@ -429,3 +399,16 @@ function toggleDarkMode() {
 
 const darkModeButton = document.getElementById('dark-mode-button');
 darkModeButton.addEventListener('click', toggleDarkMode);
+
+function newGame() {
+    // Log the fully solved grid to the console
+    solvedBoard = createSudokuPuzzle();
+    console.log("Fully solved grid:");
+    console.log(solvedBoard);
+
+    // Log the modified grid with some numbers removed to the console
+    console.log("Modified grid with some numbers removed:");
+    console.log(board);
+
+    updateBoardTable();
+}
