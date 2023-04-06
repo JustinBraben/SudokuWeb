@@ -4,6 +4,41 @@ body {
     transition: background-color 0.5s ease;
 }
 
+#difficulty-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: auto;
+  width: 25%;
+  height: 5px;
+  min-width: 25%;
+  border-radius: 2px;
+  background-color: #000000;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+#difficulty-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  cursor: pointer;
+}
+
+#difficulty-slider::-moz-range-thumb {
+  width: 25%;
+  height: 20px;
+  min-width: 20%;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  cursor: pointer;
+}
+
+
 /* Style the Sudoku board */
 #board {
     border-collapse: collapse;
@@ -151,6 +186,40 @@ body.dark-mode {
     color: #f0f0f0;
 }
 
+.dark-mode #difficulty-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: auto;
+  width: 25%;
+  height: 5px;
+  min-width: 25%;
+  border-radius: 2px;
+  background-color: #ddd;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.dark-mode #difficulty-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  cursor: pointer;
+}
+
+.dark-mode #difficulty-slider::-moz-range-thumb {
+  width: 25%;
+  height: 20px;
+  min-width: 20%;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  cursor: pointer;
+}
+
 body.dark-mode #board td {
     border: 1px solid #f0f0f0;
 }
@@ -195,36 +264,3 @@ body.dark-mode tr:nth-child(n) {
 
 
 /*//////////////////////////////////////////////////////////////////////////*/
-
-/*
-#difficulty-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 33%;
-  height: 10px;
-  border-radius: 5px;
-  background-color: #ddd;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-#difficulty-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #4CAF50;
-  cursor: pointer;
-}
-
-#difficulty-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #4CAF50;
-  cursor: pointer;
-}
-*/
