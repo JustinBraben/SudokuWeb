@@ -9,6 +9,7 @@ let minutes = 0;
 let timer = setInterval(gameTimer, 1000);
 let timeToCreateSudoku = 0;
 let difficulty = 30;
+let darkModeEnabled = false;
 
 // Call the createSudokuPuzzle() function to get the fully solved grid and the modified grid
 let solvedBoard = createSudokuPuzzle();
@@ -256,12 +257,26 @@ function createSudokuPuzzle() {
 // Function to highlight cells in the same row, column, and square
 function highlightCells(row, col, boardElement, type) {
     // Highlight cells in the same row and column
+    let highlighted = document.querySelectorAll(".highlighted");
+    let current = document.querySelectorAll(".current");
     for (let i = 0; i < 9; i++) {
         let cell = boardElement.rows[i].cells[col];
         if (i !== row) {
-            cell.classList.add("highlighted");
+            if (darkModeEnabled) {
+                cell.classList.add('dark-mode');
+                cell.classList.add("highlighted");
+            } else {
+                cell.classList.add("highlighted");
+                cell.classList.remove('dark-mode');
+            }
         } else {
-            cell.classList.add("current");
+            if (darkModeEnabled) {
+                cell.classList.add('dark-mode');
+                cell.classList.add("current");
+            } else {
+                cell.classList.add("current");
+                cell.classList.remove('dark-mode');
+            }
         }
         if (type) {
             //console.log(`Highlighting ${type} at row ${i}, col ${col}`);
@@ -271,9 +286,21 @@ function highlightCells(row, col, boardElement, type) {
     for (let j = 0; j < 9; j++) {
         let cell = boardElement.rows[row].cells[j];
         if (j !== col) {
-            cell.classList.add("highlighted");
+            if (darkModeEnabled) {
+                cell.classList.add('dark-mode');
+                cell.classList.add("highlighted");
+            } else {
+                cell.classList.add("highlighted");
+                cell.classList.remove('dark-mode');
+            }
         } else {
-            cell.classList.add("current");
+            if (darkModeEnabled) {
+                cell.classList.add('dark-mode');
+                cell.classList.add("current");
+            } else {
+                cell.classList.add("current");
+                cell.classList.remove('dark-mode');
+            }
         }
         if (type) {
             //console.log(`Highlighting ${type} at row ${row}, col ${j}`);
@@ -287,9 +314,21 @@ function highlightCells(row, col, boardElement, type) {
         for (let j = squareCol; j < squareCol + 3; j++) {
             let cell = boardElement.rows[i].cells[j];
             if (i !== row || j !== col) {
-                cell.classList.add("highlighted");
+                if (darkModeEnabled) {
+                    cell.classList.add('dark-mode');
+                    cell.classList.add("highlighted");
+                } else {
+                    cell.classList.add("highlighted");
+                    cell.classList.remove('dark-mode');
+                }
             } else {
-                cell.classList.add("current");
+                if (darkModeEnabled) {
+                    cell.classList.add('dark-mode');
+                    cell.classList.add("current");
+                } else {
+                    cell.classList.add("current");
+                    cell.classList.remove('dark-mode');
+                }
             }
             if (type) {
                 //console.log(`Highlighting ${type} at row ${i}, col ${j}`);
@@ -457,6 +496,11 @@ function toggleDarkMode() {
     body.classList.toggle('dark-mode');
     cells.forEach(cell => cell.classList.toggle('dark-mode'));
     sliderContainer.forEach(cell => cell.classList.toggle('dark-mode'));
+    if (darkModeEnabled) {
+        darkModeEnabled = false;
+    } else {
+        darkModeEnabled = true;
+    }
 };
 
 function gameTimer() {

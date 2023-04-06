@@ -8,8 +8,13 @@ body {
 #board {
     border-collapse: collapse;
     margin: auto;
-    width: 500px;
-    height: 500px;
+    width: 30%; /* Set the width to 100% to occupy the entire width of the parent container */
+    height: 40%; /* Set the height to 100% to occupy the entire height of the parent container */
+    max-width: 30%; /* Set the maximum width to 100% to prevent the table from exceeding the parent container's width */
+    max-height: 50%; /* Set the maximum height to 100% to prevent the table from exceeding the parent container's height */
+    table-layout: fixed; /* Set the table layout to fixed to ensure that the table cells adjust their width based on the available space */
+    min-width: 20%;
+    min-height: 30%;
     transition: background-color 0.5s ease;
 }
 
@@ -47,6 +52,10 @@ tr:nth-child(n) {
 
 .highlight-same {
     background-color: #e6ffe6;
+}
+
+.current {
+  background-color: #007aff;
 }
 
 h1 {
@@ -169,6 +178,10 @@ body.dark-mode tr:nth-child(n) {
 
 .highlight-same.dark-mode {
     background-color: #1aff8c;
+}
+
+.current.dark-mode {
+  background-color: #004da0;
 }
 
 .slider-container.dark-mode {
