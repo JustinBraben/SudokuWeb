@@ -9,10 +9,10 @@
     <h1>Sudoku Board</h1>
     <div class="slider-container">
             <label for="difficulty-slider" id="difficulty-label">Easy</label>
-            <input type="range" id="difficulty-slider" min="1" max="3" value="1">
+            <input type="range" id="difficulty-slider" onchange="setDifficulty()" min="1" max="3" value="1">
     </div>
     <button id="dark-mode-button" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-    <button onclick="newGame()">New Game</button>
+    <button onclick="generateNewGame()">New Game</button>
     <div id="timer">00:00</div>
     <div id="guessBanner" class=""></div>
     <table id="board"></table>

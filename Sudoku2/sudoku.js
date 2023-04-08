@@ -1,5 +1,3 @@
-// Pseudo code outline for Sudoku game
-
 // Global variables
 
 const darkModeButton = document.getElementById('dark-mode-button');
@@ -13,7 +11,7 @@ let currentDifficulty = 10;               		// Variable to store the current dif
 let darkModeEnabled = false;                   	// Variable to store the current dark mode state
 let seconds = 0;                          		// Seconds on timer
 let minutes = 0;                          		// Minutes on timer
-//let timer = setInterval(gameTimer, 1000);
+let timer;
 let timeToCreateSudoku = 0;
 
 // Function used to shuffle numbers when making a sudoku grid
@@ -113,7 +111,7 @@ function solveSudoku(grid) {
 
 	// If all cells are filled in, return true
 	return true;
-}
+};
 
 function findEmptyCell(grid) {
 	// Loop through each cell in the grid
@@ -172,7 +170,7 @@ function countSolutions(grid) {
 function removeNumbers(grid, numToRemove) {
 	// Create an array with the indices of all the cells in the grid
 	let cellsToRemove = Array.from({ length: 81 }, (_, i) => i);
-	let newGameBoard = grid;
+	let newGameBoard = JSON.parse(JSON.stringify(grid));			//Need to stringify to deep copy
 
 	// Shuffle the array randomly
 	shuffle(cellsToRemove);
@@ -201,6 +199,12 @@ function removeNumbers(grid, numToRemove) {
 	}
 
 	return newGameBoard;
+};
+
+function setSelectedCell(row, col, selectedCell) {
+	selectedCell.row = row;
+	selectedCell.col = col;
+	return selectedCell;
 };
 
 function generateBoard(gameBoard) {
@@ -232,22 +236,24 @@ function generateBoard(gameBoard) {
 			cell.setAttribute("tabindex", 0);
 
 			cell.addEventListener("mouseover", (event) => {
-				selectedCell.row = i;
-				selectedCell.col = j;
+				selectedCell = setSelectedCell(i, j, selectedCell);
 				handleMouseOver(event, selectedCell, boardElement, type);
 			});
 
 			cell.addEventListener("mouseout", (event) => {
-				selectedCell.row = i;
-				selectedCell.col = j;
+				selectedCell = setSelectedCell(i, j, selectedCell);
 				handleMouseOut(event, type);
 			});
 
 			// Set the row and column indices of the selected cell to the current cell's indices when the cell is clicked
 			cell.addEventListener("click", (event) => {
-				selectedCell.row = i;
-				selectedCell.col = j;
+				selectedCell = setSelectedCell(i, j, selectedCell);
 				handleClick(event, selectedCell);
+			});
+
+			cell.addEventListener("keydown", (event) => {
+				selectedCell = setSelectedCell(i, j, selectedCell);
+				handleKeyDown(event, selectedCell);
 			});
 
 			// Append the cell to the row
@@ -275,6 +281,8 @@ function generateSolvedSudoku() {
 
 	solveSudoku(grid);
 
+	//console.log(grid);
+
 	// Return a solved sudoku puzzle based on grid
 	return grid;
 };
@@ -285,22 +293,34 @@ function generateNewGame(difficulty) {
 	gameBoard = [];
 	solutionBoard = [];
 
+	console.clear(); // Clear the console
+
 	// Generate a new Sudoku solution
 	solutionBoard = generateSolvedSudoku();
-	console.table(solutionBoard);
+
+	let solutionBoardCopy = Array.from(solutionBoard);
 
 	// Generate a sudoku playable array based on the solution, and difficulty
-	gameBoard = removeNumbers(solutionBoard, currentDifficulty);
-	console.table(gameBoard);
+	gameBoard = removeNumbers(solutionBoardCopy, currentDifficulty);
+
+	// Make sure the game boards are good
+	console.log(solutionBoard);
+	console.log(gameBoard);
 
 	// Generate a gameBoard based on solutionBoard (remove values to be playable)
 	generateBoard(gameBoard);
 
 	// Render the game board on the HTML page
-	//renderGameBoard(gameBoard);
+	updateBoardTable();
 
 	// Reset the banner state
-	//resetBanner();
+	setEmptyBanner();
+
+	clearInterval(timer);
+	seconds = 0;
+	minutes = 0;
+	document.getElementById("timer").innerHTML = "00:00";
+	timer = setInterval(gameTimer, 1000);
 };
 
 // Function to reset the banner state
@@ -312,6 +332,25 @@ function resetBanner() {
 function toggleDarkMode() {
 	// Toggle the dark mode state
 	// Update the CSS styles for dark mode on the HTML page
+	const body = document.body;
+	body.classList.toggle('dark-mode');
+	cells.forEach(cell => cell.classList.toggle('dark-mode'));
+	sliderContainer.forEach(cell => cell.classList.toggle('dark-mode'));
+	if (darkModeEnabled) {
+		darkModeEnabled = false;
+	} else {
+		darkModeEnabled = true;
+	}
+};
+
+function gameTimer() {
+	seconds++;
+	if (seconds == 60) {
+		seconds = 0;
+		minutes++;
+	}
+	var timerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+	document.getElementById("timer").innerHTML = timerText;
 };
 
 function highlightCells(event, selectedCell, boardElement, type) {
@@ -322,21 +361,9 @@ function highlightCells(event, selectedCell, boardElement, type) {
 	for (let i = 0; i < 9; i++) {
 		let cell = boardElement.rows[i].cells[selectedCell.col];
 		if (i !== selectedCell.row) {
-			if (darkModeEnabled) {
-				cell.classList.add('dark-mode');
-				cell.classList.add("highlighted");
-			} else {
-				cell.classList.add("highlighted");
-				cell.classList.remove('dark-mode');
-			}
+			cellHighlight(cell);
 		} else {
-			if (darkModeEnabled) {
-				cell.classList.add('dark-mode');
-				cell.classList.add("current");
-			} else {
-				cell.classList.add("current");
-				cell.classList.remove('dark-mode');
-			}
+			cellCurrentHighlight(cell);
 		}
 		if (type) {
 			//console.log(`Highlighting ${type} at row ${i}, col ${col}`);
@@ -346,25 +373,50 @@ function highlightCells(event, selectedCell, boardElement, type) {
 	for (let j = 0; j < 9; j++) {
 		let cell = boardElement.rows[selectedCell.row].cells[j];
 		if (j !== selectedCell.col) {
-			if (darkModeEnabled) {
-				cell.classList.add('dark-mode');
-				cell.classList.add("highlighted");
-			} else {
-				cell.classList.add("highlighted");
-				cell.classList.remove('dark-mode');
-			}
+			cellHighlight(cell);
 		} else {
-			if (darkModeEnabled) {
-				cell.classList.add('dark-mode');
-				cell.classList.add("current");
-			} else {
-				cell.classList.add("current");
-				cell.classList.remove('dark-mode');
-			}
+			cellCurrentHighlight(cell);
 		}
 		if (type) {
 			//console.log(`Highlighting ${type} at row ${row}, col ${j}`);
 		}
+	}
+
+	// Highlight cells in the same square
+	let squareRow = Math.floor(selectedCell.row / 3) * 3;
+	let squareCol = Math.floor(selectedCell.col / 3) * 3;
+	for (let i = squareRow; i < squareRow + 3; i++) {
+		for (let j = squareCol; j < squareCol + 3; j++) {
+			let cell = boardElement.rows[i].cells[j];
+			if (i !== selectedCell.row || j !== selectedCell.col) {
+				cellHighlight(cell);
+			} else {
+				cellCurrentHighlight(cell);
+			}
+			if (type) {
+				//console.log(`Highlighting ${type} at row ${i}, col ${j}`);
+			}
+		}
+	}
+};
+
+function cellHighlight(cell) {
+	if (darkModeEnabled) {
+		cell.classList.add('dark-mode');
+		cell.classList.add("highlighted");
+	} else {
+		cell.classList.add("highlighted");
+		cell.classList.remove('dark-mode');
+	}
+};
+
+function cellCurrentHighlight(cell) {
+	if (darkModeEnabled) {
+		cell.classList.add('dark-mode');
+		cell.classList.add("current");
+	} else {
+		cell.classList.add("current");
+		cell.classList.remove('dark-mode');
 	}
 };
 
@@ -382,6 +434,14 @@ function clearHighlights(event, type) {
 	}
 };
 
+function isValidInput(value, selectedCell, board) {
+	if (value === solutionBoard[selectedCell.row][selectedCell.col]) {
+		console.log(`Clicked (${value}) is correct!`);
+		return true;
+	}
+	return false;
+};
+
 // Function to handle user guesses
 function handleGuess(row, col, value) {
 	// Check if the guessed value matches the solution value at the given position
@@ -393,7 +453,7 @@ function handleGuess(row, col, value) {
 };
 
 function handleMouseOver(event, selectedCell, boardElement, type) {
-	console.log(`Moused over cell (${selectedCell.row}, ${selectedCell.col})`)
+	//console.log(`Moused over cell (${selectedCell.row}, ${selectedCell.col})`)
 	highlightCells(event, selectedCell, boardElement, type);
 };
 
@@ -407,8 +467,46 @@ function handleClick(event, selectedCell) {
 
 	console.log(`Clicked cell (${selectedCell.row}, ${selectedCell.col}) number in this cell should be (${solutionBoard[selectedCell.row][selectedCell.col]})`);
 
+	setEmptyBanner();
+
 	// Set focus on the clicked cell
 	cell.focus();
+};
+
+function handleKeyDown(event, selectedCell) {
+	const guessBanner = document.getElementById("guessBanner");
+	if (gameBoard[selectedCell.row][selectedCell.col] != 0) {
+		//console.log(`Can't guess here`);
+		return;
+	}
+	if (selectedCell) {
+		if (event.keyCode >= 49 && event.keyCode <= 57) {
+			let value = event.keyCode - 48;
+			//console.log(`Clicked (${value})`);
+			if (isValidInput(value, selectedCell, gameBoard)) {
+				gameBoard[selectedCell.row][selectedCell.col] = value;
+				selectedCell.textContent = value;
+				updateBoardTable();
+				document.getElementById("guessBanner").innerHTML = "Correct";
+				document.getElementById("guessBanner").classList.remove("incorrect");
+				document.getElementById("guessBanner").classList.remove("empty");
+				document.getElementById("guessBanner").classList.add("correct");
+				if (arraysAreEqual(gameBoard, solutionBoard)) {
+					clearInterval(timer);
+					setWinBanner();
+				}
+			} else {
+				selectedCell.textContent = "";
+				document.getElementById("guessBanner").innerHTML = "Incorrect";
+				document.getElementById("guessBanner").classList.remove("correct");
+				document.getElementById("guessBanner").classList.remove("empty");
+				document.getElementById("guessBanner").classList.add("incorrect");
+			}
+		} else if (event.keyCode === 8 || event.keyCode === 46) {
+			selectedCell.textContent = "";
+			gameBoard[selectedCell.row][selectedCell.col] = 0;
+		}
+	}
 };
 
 // Function to handle difficulty slider change
@@ -417,31 +515,81 @@ function handleDifficultyChange(value) {
 	// Generate a new game with the updated difficulty level
 };
 
-// Event listeners
+function updateBoardTable() {
+	// Get the table element from the HTML document
+	let boardElement = document.getElementById("board");
 
-// Event listener for new game button
-//newGameButton.addEventListener('click', function () {
-// Call the generateNewGame function with the current difficulty level
-//});
+	// Loop through all the table cells and update their text content
+	for (let i = 0; i < 9; i++) {
+		for (let j = 0; j < 9; j++) {
+			let cell = boardElement.rows[i].cells[j];
+			cell.textContent = gameBoard[i][j] === 0 ? "" : gameBoard[i][j];
+		}
+	}
+};
 
-// Event listener for game cell clicks
-//gameBoardCells.addEventListener('click', function (event) {
-// Get the clicked cell position (row, col)
-// Get the guessed value from the user
-// Call the handleGuess function with the clicked cell position and guessed value
-//});
+function setEmptyBanner() {
+	let banner = document.getElementById("guessBanner");
+	banner.className = "";
+	banner.classList.add("empty");
+	document.getElementById("guessBanner").innerHTML = "";
+};
 
-// Event listener for difficulty slider change
-//difficultySlider.addEventListener('input', function (event) {
-// Get the value from the difficulty slider
-// Call the handleDifficultyChange function with the slider value
-//});
+function setWinBanner() {
+	let banner = document.getElementById("guessBanner");
+	banner.className = "";
+	banner.classList.add("correct");
+	document.getElementById("guessBanner").innerHTML = "Congratulations, you won! Press New Game to play again.";
+	clearInterval(timer);
+};
 
-// Event listener for toggle dark mode button
-//toggleDarkModeButton.addEventListener('click', function () {
-// Call the toggleDarkMode function
-//});
+function setDifficulty() {
+	let difficultySlider = document.getElementById("difficulty-slider");
+	let difficultyLabel = document.getElementById("difficulty-label");
+	let numCellsToRemove;
+	switch (difficultySlider.value) {
+		case "1":
+			difficultyLabel.textContent = "Easy";
+			currentDifficulty = 30;
+			break;
+		case "2":
+			difficultyLabel.textContent = "Medium";
+			currentDifficulty = 40;
+			break;
+		case "3":
+			difficultyLabel.textContent = "Hard";
+			currentDifficulty = 50;
+			break;
+		default:
+			difficultyLabel.textContent = "Easy";
+			currentDifficulty = 30;
+			break;
+	}
+};
+
+function arraysAreEqual(arr1, arr2) {
+	// Check if the arrays have the same length
+	if (arr1.length !== arr2.length) {
+		return false;
+	}
+
+	// Check if each element of the arrays is identical
+	for (let i = 0; i < arr1.length; i++) {
+		if (arr1[i].length !== arr2[i].length) {
+			return false;
+		}
+		for (let j = 0; j < arr1[i].length; j++) {
+			if (arr1[i][j] !== arr2[i][j]) {
+				return false;
+			}
+		}
+	}
+
+	// If the arrays have the same length and all elements are identical, they are equal
+	return true;
+};
 
 window.addEventListener("load", function () {
 	generateNewGame(currentDifficulty);
+	//console.log(solutionBoard);
 });

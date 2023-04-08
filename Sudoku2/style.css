@@ -119,8 +119,8 @@ button:hover {
 #timer {
   font-size: 2rem;
   font-weight: bold;
-  margin-top: 1px;
-  margin-bottom: 1px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   text-align: center;
 }
 
@@ -139,19 +139,28 @@ button:hover {
 
 .correct {
   background-color: green;
-  color: white;
+  color: white;  
+  height: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   transition: background-color 1.0s;
 }
 
 .incorrect {
   background-color: red;
   color: white;
+  height: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   transition: background-color 1.0s;
 }
 
 .empty {
   background-color: transparent;
   color: black;
+  height: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   transition: background-color 1.0s;
 }
 
